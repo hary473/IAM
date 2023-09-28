@@ -1,0 +1,53 @@
+Resources:
+  # IAM Role
+  MyIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: MyRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+
+  # Managed IAM Policy
+  MyManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: My managed policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource: arn:aws:s3:::example-bucket/*
+
+  # Attach Policy to Role
+  MyPolicyAttachment:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: MyPolicyAttachment
+      Roles:
+        - Ref: MyIAMRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+
+  # IAM User
+  MyIAMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: MyUserName
+
+  # Attach Role to User
+  MyUserToRoleAttachment:
+    Type: AWS::IAM::UserToRoleAddition
+    Properties:
+      UserName: !Ref MyIAMUser
+      RoleName: !GetAtt MyIAMRole.RoleName
